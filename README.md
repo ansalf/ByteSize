@@ -1,6 +1,6 @@
-# 🤖 ByteSize Coding Academy
+# 🤖 ByteSize EduTech
 
-> Aplikasi web interaktif edukasi koding bertahap untuk anak-anak dengan maskot 3D, petualangan 48 level, puzzle balok JavaScript, kuis tantangan harian, dan sertifikat resmi kelulusan.
+> Aplikasi web interaktif edukasi koding bertahap untuk anak-anak, petualangan 48 level, puzzle balok JavaScript, kuis tantangan harian, dan sertifikat resmi kelulusan.
 
 ---
 
