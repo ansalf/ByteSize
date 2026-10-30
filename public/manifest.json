@@ -1,0 +1,17 @@
+{
+  "short_name": "ByteSize",
+  "name": "ByteSize — Petualangan Koding Anak",
+  "description": "Game petualangan belajar logika koding JavaScript ramah anak SD dengan tantangan harian kuis kilat.",
+  "icons": [
+    {
+      "src": "https://api.iconify.design/noto:rocket.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#F3F8FC",
+  "theme_color": "#00C2CB",
+  "display": "standalone",
+  "orientation": "any"
+}

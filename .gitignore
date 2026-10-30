@@ -1,0 +1,69 @@
+# ==========================================
+# Dependencies & Package Managers
+# ==========================================
+node_modules/
+.pnp
+.pnp.js
+
+# ==========================================
+# Production & Distribution Builds
+# ==========================================
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+
+# ==========================================
+# Environment Variables & Secrets (CRITICAL)
+# ==========================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+*.cert
+id_rsa
+id_rsa.pub
+
+# ==========================================
+# Temporary, Cache & OS Files
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ==========================================
+# IDE & Editor Specific Configurations
+# ==========================================
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.sublime-workspace
+*.sublime-project
+
+# ==========================================
+# Logs & Diagnostic Dumps
+# ==========================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================================
+# Scratch, Recordings & Local Browser Profiles
+# ==========================================
+demo_video/
+scratch/
+coverage/
+.turbo/
