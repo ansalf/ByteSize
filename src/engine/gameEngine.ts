@@ -7,6 +7,7 @@ export interface GameStepState {
   activeBlockId: string | null;
   status: 'IDLE' | 'RUNNING' | 'CRASHED' | 'OUT_OF_BOUNDS' | 'SUCCESS' | 'NOT_FINISHED';
   message: string;
+  checkedTile?: { x: number; y: number; isClear: boolean } | null;
 }
 
 export interface SimulationResult {
@@ -187,13 +188,21 @@ export function simulateCode(
           }
         }
 
+        const isReachingGoal = level.goalPos.x === playerPos.x && level.goalPos.y === playerPos.y;
+        let stepExplanation = 'Bagus! Jalan di depanmu aman dari rintangan. Robot berhasil melangkah 1 petak maju.';
+        if (isReachingGoal) {
+          stepExplanation = 'Hebat! Robot melangkah di jalur aman dan berhasil mencapai bendera finish!';
+        } else if (isCollectibleHere) {
+          stepExplanation = 'Hore! Jalur aman membawamu mengumpulkan bintang berkilau!';
+        }
+
         steps.push({
           playerPos: { ...playerPos },
           playerDir,
           collectedItems: [...collectedItems],
           activeBlockId: block.id,
           status: 'RUNNING',
-          message: 'Maju 1 langkah ke depan!',
+          message: stepExplanation,
         });
 
       } else if (block.type === 'TURN_LEFT') {
@@ -239,13 +248,19 @@ export function simulateCode(
 
       } else if (block.type === 'IF_PATH_CLEAR') {
         const canPass = isPathAheadClear(playerPos, playerDir, level);
+        const { dx, dy } = getForwardDelta(playerDir);
+        const targetCoord = { x: playerPos.x + dx, y: playerPos.y + dy };
+
         steps.push({
           playerPos: { ...playerPos },
           playerDir,
           collectedItems: [...collectedItems],
           activeBlockId: block.id,
           status: 'RUNNING',
-          message: canPass ? 'Jalan di depan aman! Menjalankan isi blok jika...' : 'Jalan di depan terhalang! Melewati blok...',
+          checkedTile: { x: targetCoord.x, y: targetCoord.y, isClear: canPass },
+          message: canPass 
+            ? '🔍 Sensor: Jalan di depan AMAN (✓ Bebas rintangan)! Menjalankan instruksi di dalam...' 
+            : '🔍 Sensor: Jalan di depan ADA RINTANGAN (⚠️ Bahaya/Batu)! Melompati instruksi agar tidak menabrak.',
         });
 
         if (canPass) {

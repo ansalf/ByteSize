@@ -129,6 +129,7 @@ export interface UserProgress {
   hasCustomizedName?: boolean;   // Menandai apakah pemain sudah mengisi username/nama panggilan sendiri
   unlockedLevel: number;
   unlockedStages?: Record<CurriculumStageId, boolean>;
+  stageHintsRemaining?: Record<CurriculumStageId, number>; // Kuota hint maks 3 per stage (tidak reset antar level di stage yg sama)
   masteredCompetencies?: string[]; // Daftar ID kompetensi yang sudah dikuasai
   stars: Record<number, number>; // levelId -> stars (1..3)
   coins: number;
@@ -158,4 +159,21 @@ export interface AvatarOption {
   unlockedAtLevel?: number;
   price?: number; // Harga koin di toko (misal Kuda = 100 koin)
 }
+
+export type BonusChallengeType = 'DEBUGGING' | 'ORDERING' | 'CONCEPT_QUIZ';
+
+export interface BonusChallenge {
+  id: string;
+  type: BonusChallengeType;
+  title: string;
+  description: string;
+  codeSnippet?: string;
+  options?: string[];
+  correctOptionIndex?: number;
+  // Untuk tantangan menyusun urutan instruksi (ORDERING)
+  orderItems?: { id: string; text: string }[];
+  correctOrder?: string[]; // Array of ids
+  explanation: string;
+}
+
 

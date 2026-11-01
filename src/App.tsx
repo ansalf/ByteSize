@@ -73,6 +73,21 @@ export const App: React.FC = () => {
     setCurrentScreen('GAMEPLAY');
   };
 
+  // Mengubah kuota hint tersisa per stage (maks 3 default, berkurang saat pakai hint, bertambah saat selesaikan tantangan)
+  const handleUpdateStageHints = (stageId: string, count: number) => {
+    updateProgress((prev) => ({
+      ...prev,
+      stageHintsRemaining: {
+        BEGINNER: 3,
+        INTERMEDIATE: 3,
+        ADVANCED: 3,
+        CREATOR_STUDIO: 3,
+        ...(prev.stageHintsRemaining || {}),
+        [stageId]: count,
+      },
+    }));
+  };
+
   // Callback saat level selesai dan menang
   const handleLevelComplete = (levelId: number, starsEarned: number) => {
     updateProgress((prev) => {
@@ -206,6 +221,7 @@ export const App: React.FC = () => {
             onMarkLessonRead={handleMarkLessonRead}
             onSaveLessonQuizAnswer={handleSaveLessonQuizAnswer}
             onMarkDemoCompleted={handleMarkDemoCompleted}
+            onUpdateStageHints={handleUpdateStageHints}
             hasNextLevel={activeLevelId < LEVELS.length}
           />
         )}

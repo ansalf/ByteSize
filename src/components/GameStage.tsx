@@ -12,6 +12,7 @@ interface GameStageProps {
   trailSteps?: { x: number; y: number }[]; // Jejak langkah kotak yang telah dilalui
   activeHatId?: string;
   activeThemeId?: string;
+  checkedTile?: { x: number; y: number; isClear: boolean } | null; // Highlight visual sensor pemeriksaan jalur aman
 }
 
 export const GameStage: React.FC<GameStageProps> = ({
@@ -22,6 +23,7 @@ export const GameStage: React.FC<GameStageProps> = ({
   avatarId,
   isCrashed,
   trailSteps = [],
+  checkedTile = null,
 }) => {
   const currentAvatar = AVATARS.find(a => a.id === avatarId) || AVATARS[0];
 
@@ -82,14 +84,19 @@ export const GameStage: React.FC<GameStageProps> = ({
             const isCollected = collectedItems.some(c => c.x === x && c.y === y);
             const isGoal = level.goalPos.x === x && level.goalPos.y === y;
             const isTrailed = trailSteps.some(step => step.x === x && step.y === y);
+            const isCheckedHere = checkedTile?.x === x && checkedTile?.y === y;
 
             let tileBg = '#CBD5E1';
             let tileBorder = '2px solid #94A3B8';
             let tileEmoji = '';
 
-            if (tile === 'PATH' || tile === 'START' || tile === 'GOAL' || tile === 'STAR') {
-              tileBg = isTrailed ? '#FEF9C3' : '#FEF08A'; // Ubin jejak langkah berwarna kuning lembut
-              tileBorder = isTrailed ? '2px dashed #EAB308' : '2px solid #FACC15';
+            if (isCheckedHere) {
+              // Highlight visual pemeriksaan jalur aman
+              tileBg = checkedTile.isClear ? '#DCFCE7' : '#FEE2E2';
+              tileBorder = checkedTile.isClear ? '3px solid #16A34A' : '3px solid #DC2626';
+            } else if (tile === 'PATH' || tile === 'START' || tile === 'GOAL' || tile === 'STAR') {
+              tileBg = isTrailed ? '#FEF9C3' : '#FEF08A'; // Ubin jejak langkah berwarna kuning lembut stabil
+              tileBorder = isTrailed ? '2px solid #EAB308' : '2px solid #FACC15';
             } else if (tile === 'OBSTACLE') {
               tileBg = '#E2E8F0';
               tileBorder = '2px solid #94A3B8';
@@ -115,9 +122,22 @@ export const GameStage: React.FC<GameStageProps> = ({
                   position: 'relative',
                   fontSize: '1.4rem',
                   boxShadow: '0 3px 0 rgba(0, 0, 0, 0.08)',
-                  transition: 'background-color 0.3s ease, border-color 0.3s ease',
                 }}
               >
+                {/* Penanda Jejak Titik Sensor Pemeriksaan Jalur */}
+                {isCheckedHere && !isPlayerHere && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '2px',
+                    right: '2px',
+                    fontSize: '1rem',
+                    fontWeight: 900,
+                    zIndex: 15,
+                  }}>
+                    {checkedTile.isClear ? '✅' : '⚠️'}
+                  </span>
+                )}
+
                 {/* Penanda jejak titik langkah */}
                 {isTrailed && !isPlayerHere && !tileEmoji && (
                   <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>🐾</span>
@@ -132,13 +152,16 @@ export const GameStage: React.FC<GameStageProps> = ({
                 )}
 
                 {isGoal && !isPlayerHere && (
-                  <span style={{ fontSize: '1.8rem' }} className="animate-gentle-bounce">
+                  <span style={{ fontSize: '1.8rem' }}>
                     🏁
                   </span>
                 )}
 
                 {isCollectible && !isCollected && !isPlayerHere && (
-                  <span style={{ fontSize: '1.8rem' }} className="animate-pulse-glow">
+                  <span style={{
+                    fontSize: '1.8rem',
+                    filter: 'drop-shadow(0 2px 4px rgba(245, 158, 11, 0.4))',
+                  }}>
                     ⭐
                   </span>
                 )}

@@ -254,12 +254,12 @@ body {
 }
 
 @keyframes pulseGlow {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0px transparent); }
-  50% { transform: scale(1.03); filter: drop-shadow(0 0 8px rgba(255, 174, 0, 0.6)); }
+  0%, 100% { filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.4)); }
+  50% { filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.4)); }
 }
 
 .animate-pulse-glow {
-  animation: pulseGlow 2.2s infinite ease-in-out;
+  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.4));
 }
 
 /* Motion Graphic: Ethereal Floating Badge with Soft Ambient Glow */

@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Play, RotateCcw, HelpCircle, Code, LayoutGrid, BookOpen } from 'lucide-react';
-import { BlockType, CodeBlock, Direction, LevelConfig, UserProgress } from '../types/game';
+import { BlockType, CodeBlock, CurriculumStageId, Direction, LevelConfig, UserProgress } from '../types/game';
 import { GameStage } from './GameStage';
 import { CodeWorkshop } from './CodeWorkshop';
 import { TextCodeEditor } from './TextCodeEditor';
 import { Stage1LessonReader } from './Stage1LessonReader';
 import { VictoryModal } from './VictoryModal';
+import { BonusChallengeModal } from './BonusChallengeModal';
+import { SafePathTutorialModal } from './SafePathTutorialModal';
+import { WORLDS } from '../config/levels';
 import { simulateCode } from '../engine/gameEngine';
 import { executeJavaScriptSafely } from '../engine/jsInterpreter';
 import { blocksToJavaScript, javaScriptToBlocks } from '../engine/codeConverter';
@@ -21,6 +24,7 @@ interface GameplayScreenProps {
   onMarkLessonRead: (levelId: number) => void;
   onSaveLessonQuizAnswer?: (levelId: number, answerIndex: number) => void;
   onMarkDemoCompleted: (levelId: number) => void;
+  onUpdateStageHints?: (stageId: string, count: number) => void;
   hasNextLevel: boolean;
 }
 
@@ -34,6 +38,7 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
   onMarkLessonRead,
   onSaveLessonQuizAnswer,
   onMarkDemoCompleted,
+  onUpdateStageHints,
   hasNextLevel,
 }) => {
   // ALUR 2 TAHAP: 'LESSON' (Materi Bacaan & Cerita Pengantar) -> 'CHALLENGE' (Main / Coba Sendiri)
@@ -74,6 +79,7 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
   const [playerDir, setPlayerDir] = useState<Direction>(level.startDir);
   const [collectedItems, setCollectedItems] = useState<{ x: number; y: number }[]>([]);
   const [trailSteps, setTrailSteps] = useState<{ x: number; y: number }[]>([level.startPos]);
+  const [checkedTile, setCheckedTile] = useState<{ x: number; y: number; isClear: boolean } | null>(null);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isCrashed, setIsCrashed] = useState<boolean>(false);
@@ -83,6 +89,40 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
   const [showVictoryModal, setShowVictoryModal] = useState<boolean>(false);
   const [victoryData, setVictoryData] = useState<{ stars: number; blocks: number } | null>(null);
   const [showHintModal, setShowHintModal] = useState<boolean>(false);
+  const [showBonusChallengeModal, setShowBonusChallengeModal] = useState<boolean>(false);
+  const [showSafePathTutorial, setShowSafePathTutorial] = useState<boolean>(false);
+
+  // Cari Stage ID dari level ini
+  const currentWorld = WORLDS.find(w => w.id === level.worldId);
+  const currentStageId: CurriculumStageId = (currentWorld?.stageId as CurriculumStageId) || 'BEGINNER';
+
+  // Kuota hint stage (maks 3 default, tidak kembali 0 saat pindah level di stage yang sama)
+  const stageHintsRemaining = progress.stageHintsRemaining?.[currentStageId] !== undefined
+    ? progress.stageHintsRemaining[currentStageId]
+    : 3;
+
+  const handleOpenHint = () => {
+    sounds.playClick();
+    if (stageHintsRemaining > 0) {
+      // Kurangi kuota jika modal hint baru pertama kali dibuka di level ini
+      if (onUpdateStageHints) {
+        onUpdateStageHints(currentStageId, Math.max(0, stageHintsRemaining - 1));
+      }
+      setShowHintModal(true);
+    } else {
+      // Kuota habis, buka tantangan ekstra untuk mendapatkan hint!
+      sounds.playBump();
+      setShowBonusChallengeModal(true);
+    }
+  };
+
+  const handleEarnBonusHint = () => {
+    if (onUpdateStageHints) {
+      onUpdateStageHints(currentStageId, stageHintsRemaining + 1);
+    }
+    setShowBonusChallengeModal(false);
+    setShowHintModal(true);
+  };
 
   const timerRef = useRef<number | null>(null);
 
@@ -145,6 +185,7 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
     setPlayerDir(level.startDir);
     setCollectedItems([]);
     setTrailSteps([level.startPos]);
+    setCheckedTile(null);
     setActiveBlockId(null);
     setStatusMessage('Karakter kembali ke posisi awal. Siap melangkah lagi!');
   };
@@ -285,6 +326,7 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
         setPlayerDir(step.playerDir);
         setCollectedItems(step.collectedItems);
         setTrailSteps(prev => [...prev, step.playerPos]);
+        setCheckedTile(step.checkedTile || null);
         setStatusMessage(step.message);
 
         if (step.status === 'CRASHED' || step.status === 'OUT_OF_BOUNDS') {
@@ -339,6 +381,7 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
         setPlayerDir(step.playerDir);
         setCollectedItems(step.collectedItems);
         setTrailSteps(prev => [...prev, step.playerPos]);
+        setCheckedTile(step.checkedTile || null);
         setActiveBlockId(step.activeBlockId);
         setStatusMessage(step.message);
 
@@ -480,14 +523,38 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
             </button>
           </div>
 
-          {/* Petunjuk / Hint Cepat */}
+          {/* Tombol Panduan Jalur Aman khusus jika level mendukung sensor */}
+          {level.allowedBlocks.includes('IF_PATH_CLEAR') && (
+            <button
+              className="btn-chunky btn-white btn-sm"
+              onClick={() => { sounds.playClick(); setShowSafePathTutorial(true); }}
+              title="Pelajari Cara Kerja Jalur Aman (ifPathAhead)"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                border: '2px solid #00C2CB',
+                color: '#0891B2',
+              }}
+            >
+              <span>🛡️ Panduan Sensor</span>
+            </button>
+          )}
+
+          {/* Petunjuk / Hint Cepat dengan kuota stage */}
           <button
             className="btn-chunky btn-secondary btn-sm"
-            onClick={() => { sounds.playClick(); setShowHintModal(true); }}
-            title="Petunjuk Cepat"
+            onClick={handleOpenHint}
+            title={stageHintsRemaining > 0 ? `Hint tersisa ${stageHintsRemaining}/3` : 'Kuota hint habis! Selesaikan tantangan untuk menambah hint'}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: stageHintsRemaining === 0 ? '#F59E0B' : undefined,
+            }}
           >
             <HelpCircle size={18} />
-            <span>Hint 💡</span>
+            <span>Hint ({stageHintsRemaining}/3) 💡</span>
           </button>
         </div>
       </div>
@@ -602,6 +669,7 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
               trailSteps={trailSteps}
               activeHatId={progress.activeHatId}
               activeThemeId={progress.activeThemeId}
+              checkedTile={checkedTile}
             />
 
             {/* Tombol Run & Reset di Arena */}
@@ -675,9 +743,22 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
             <span style={{ fontSize: '3rem', display: 'block', marginBottom: '8px' }}>
               💡
             </span>
-            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-text-navy)', marginBottom: '10px' }}>
+            <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--color-text-navy)', marginBottom: '6px' }}>
               Petunjuk Tantangan Level {level.id}
             </h3>
+            <div style={{
+              display: 'inline-block',
+              fontSize: '0.8rem',
+              fontWeight: 800,
+              color: '#B45309',
+              backgroundColor: '#FEF3C7',
+              padding: '4px 12px',
+              borderRadius: '12px',
+              marginBottom: '14px',
+              border: '1.5px solid #FCD34D',
+            }}>
+              Sisa Kuota Hint Stage Ini: <b>{stageHintsRemaining}/3</b>
+            </div>
             <p style={{
               fontSize: '1rem',
               color: 'var(--color-text-slate)',
@@ -712,6 +793,23 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
             </div>
           </div>
         </div>
+      )}
+
+      {/* MODAL PANDUAN VISUAL JALUR AMAN (SAFE PATH TUTORIAL) */}
+      {showSafePathTutorial && (
+        <SafePathTutorialModal
+          onClose={() => setShowSafePathTutorial(false)}
+          onProceedToPlay={() => setShowSafePathTutorial(false)}
+        />
+      )}
+
+      {/* MODAL BONUS TANTANGAN HINT SAAT KUOTA HABIS */}
+      {showBonusChallengeModal && (
+        <BonusChallengeModal
+          stageId={currentStageId}
+          onSuccessEarnHint={handleEarnBonusHint}
+          onClose={() => setShowBonusChallengeModal(false)}
+        />
       )}
 
       {/* MODAL KEMENANGAN LEVEL */}

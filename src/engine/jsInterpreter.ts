@@ -8,6 +8,7 @@ export interface InterpreterStep {
   activeLine: number | null;
   status: 'IDLE' | 'RUNNING' | 'CRASHED' | 'OUT_OF_BOUNDS' | 'SUCCESS' | 'NOT_FINISHED';
   message: string;
+  checkedTile?: { x: number; y: number; isClear: boolean } | null;
 }
 
 export interface InterpreterOutput {
@@ -178,13 +179,21 @@ export function executeJavaScriptSafely(
       logs.push(`⭐ Karakter mengoleksi bintang di kotak (${playerPos.x}, ${playerPos.y})!`);
     }
 
+    const isReachingGoal = level.goalPos.x === playerPos.x && level.goalPos.y === playerPos.y;
+    let educationalMessage = `${actionName}: Bagus! Jalur di depanmu aman. Karakter melangkah maju 1 petak.`;
+    if (isReachingGoal) {
+      educationalMessage = `${actionName}: Hebat! Jalur ini aman dan membawa karakter tepat mencapai bendera finish!`;
+    } else if (isCollectible) {
+      educationalMessage = `${actionName}: Asyik! Melewati jalur aman dan berhasil mengambil bintang emas!`;
+    }
+
     steps.push({
       playerPos: { ...playerPos },
       playerDir,
       collectedItems: [...collectedItems],
       activeLine: null,
       status: 'RUNNING',
-      message: `${actionName}: ${friendlyMsg}`,
+      message: educationalMessage,
     });
   };
 
@@ -242,6 +251,21 @@ export function executeJavaScriptSafely(
     checkSafety();
     if (isTerminated) return;
     const canPass = isPathAheadClear(playerPos, playerDir, level);
+    const { dx, dy } = getForwardDelta(playerDir);
+    const targetCoord = { x: playerPos.x + dx, y: playerPos.y + dy };
+
+    steps.push({
+      playerPos: { ...playerPos },
+      playerDir,
+      collectedItems: [...collectedItems],
+      activeLine: null,
+      status: 'RUNNING',
+      checkedTile: { x: targetCoord.x, y: targetCoord.y, isClear: canPass },
+      message: canPass
+        ? '🔍 ifPathAhead(): Jalan di depan AMAN (✓ Bebas rintangan)! Menjalankan instruksi di dalam...'
+        : '🔍 ifPathAhead(): Jalan di depan ADA RINTANGAN (⚠️ Bahaya/Batu)! Melompati instruksi agar tidak menabrak.',
+    });
+
     if (canPass) {
       logs.push('✅ ifPathAhead: Jalan di depan aman! Menjalankan instruksi...');
       callback();
