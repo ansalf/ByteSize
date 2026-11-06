@@ -45,8 +45,7 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
   // Setiap kali masuk ke level baru atau berpindah card level, anak SELALU disambut pengantar materi terlebih dahulu
   const [currentStage, setCurrentStage] = useState<'LESSON' | 'CHALLENGE'>('LESSON');
 
-  // State Tab Mobile (Hanya aktif ketika layar sempit < 768px portrait)
-  const [activeMobileTab, setActiveMobileTab] = useState<'ARENA' | 'CODE'>('ARENA');
+  // State Layar Mobile (< 768px portrait)
   const [isMobileScreen, setIsMobileScreen] = useState<boolean>(() => 
     typeof window !== 'undefined' ? window.innerWidth < 768 : false
   );
@@ -285,11 +284,6 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
     setRuntimeError(null);
     setFriendlyExplanation(null);
     sounds.playClick();
-
-    // Di mobile, jika anak menekan Run dari tab kode, otomatis alihkan ke Arena agar melihat pergerakan robot
-    if (isMobileScreen) {
-      setActiveMobileTab('ARENA');
-    }
 
     if (editorMode === 'TEXT') {
       const res = executeJavaScriptSafely(jsCode, level);
@@ -587,146 +581,100 @@ export const GameplayScreen: React.FC<GameplayScreenProps> = ({
         </div>
       </div>
 
-      {/* MOBILE SEGMENTED CONTROL TABS (Hanya muncul di HP / Mobile Screen < 768px) */}
-      {isMobileScreen && (
+      {/* LAYOUT TAMPILAN: UNIFIED SCREEN UNTUK MOBILE & DESKTOP (Tanpa perlu bolak-balik tab!) */}
+      <div style={{
+        display: isMobileScreen ? 'flex' : 'grid',
+        flexDirection: isMobileScreen ? 'column' : undefined,
+        gridTemplateColumns: isMobileScreen ? undefined : 'minmax(320px, 420px) minmax(360px, 1fr)',
+        gap: isMobileScreen ? '12px' : '18px',
+        alignItems: 'start',
+        width: '100%',
+      }}>
+        {/* SECTION 1: ARENA GAME (Selalu terlihat di atas pada layar HP) */}
         <div style={{
           display: 'flex',
-          backgroundColor: '#FFFFFF',
-          padding: '4px',
-          borderRadius: '16px',
-          border: '2px solid #E2E8F0',
-          boxShadow: '0 3px 0 #E2E8F0',
-          gap: '4px',
+          flexDirection: 'column',
+          gap: isMobileScreen ? '8px' : '14px',
           width: '100%',
         }}>
-          <button
-            onClick={() => { sounds.playClick(); setActiveMobileTab('ARENA'); }}
-            style={{
-              flex: 1,
-              padding: '10px 12px',
-              borderRadius: '12px',
-              border: 'none',
-              fontFamily: 'var(--font-family-kids)',
-              fontWeight: 800,
-              fontSize: '0.95rem',
-              cursor: 'pointer',
-              backgroundColor: activeMobileTab === 'ARENA' ? 'var(--color-primary)' : 'transparent',
-              color: activeMobileTab === 'ARENA' ? '#FFFFFF' : 'var(--color-text-slate)',
-              boxShadow: activeMobileTab === 'ARENA' ? '0 3px 0 var(--color-primary-dark)' : 'none',
-              transition: 'all 0.15s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-            }}
-          >
-            <span>🎮 Arena Game</span>
-          </button>
+          <GameStage
+            level={level}
+            playerPos={playerPos}
+            playerDir={playerDir}
+            collectedItems={collectedItems}
+            avatarId={progress.selectedAvatarId}
+            isCrashed={isCrashed}
+            trailSteps={trailSteps}
+            activeHatId={progress.activeHatId}
+            activeThemeId={progress.activeThemeId}
+            checkedTile={checkedTile}
+            compact={isMobileScreen}
+          />
 
-          <button
-            onClick={() => { sounds.playClick(); setActiveMobileTab('CODE'); }}
-            style={{
-              flex: 1,
-              padding: '10px 12px',
-              borderRadius: '12px',
-              border: 'none',
-              fontFamily: 'var(--font-family-kids)',
-              fontWeight: 800,
-              fontSize: '0.95rem',
-              cursor: 'pointer',
-              backgroundColor: activeMobileTab === 'CODE' ? 'var(--color-secondary)' : 'transparent',
-              color: activeMobileTab === 'CODE' ? '#FFFFFF' : 'var(--color-text-slate)',
-              boxShadow: activeMobileTab === 'CODE' ? '0 3px 0 var(--color-secondary-dark)' : 'none',
-              transition: 'all 0.15s ease',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px',
-            }}
-          >
-            <span>💻 Kode ({editorMode === 'BLOCKS' ? 'Balok' : 'JS'})</span>
-          </button>
+          {/* Tombol Run & Reset di Arena (Akses Cepat) */}
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              disabled={isRunning}
+              onClick={handleRunProgram}
+              className="btn-chunky btn-success"
+              style={{
+                flex: 2,
+                padding: isMobileScreen ? '10px 14px' : '14px 20px',
+                fontSize: isMobileScreen ? '0.95rem' : '1.1rem',
+              }}
+            >
+              <Play size={20} fill="#FFFFFF" />
+              <span>{isRunning ? 'SEDANG JALAN...' : (editorMode === 'BLOCKS' ? 'JALANKAN BALOK! 🚀' : 'JALANKAN KODE! 🚀')}</span>
+            </button>
+            <button
+              onClick={() => { sounds.playClick(); handleReset(); }}
+              className="btn-chunky btn-danger"
+              style={{
+                flex: 1,
+                padding: isMobileScreen ? '10px 12px' : '14px',
+                fontSize: isMobileScreen ? '0.9rem' : '1rem',
+              }}
+            >
+              <RotateCcw size={18} />
+              <span>Reset</span>
+            </button>
+          </div>
         </div>
-      )}
 
-      {/* SPLIT SCREEN UTAMA: ARENA GAME (KIRI) vs WORKSHOP / EDITOR (KANAN) */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: isMobileScreen ? '1fr' : 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
-        gap: '16px',
-        alignItems: 'start',
-      }}>
-        {/* KOLOM KIRI: STAGE ARENA */}
-        {(!isMobileScreen || activeMobileTab === 'ARENA') && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <GameStage
-              level={level}
-              playerPos={playerPos}
-              playerDir={playerDir}
-              collectedItems={collectedItems}
-              avatarId={progress.selectedAvatarId}
-              isCrashed={isCrashed}
-              trailSteps={trailSteps}
-              activeHatId={progress.activeHatId}
-              activeThemeId={progress.activeThemeId}
-              checkedTile={checkedTile}
+        {/* SECTION 2: WORKSHOP KODE / EDITOR (Langsung di bawah arena, terlihat bersatu) */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          width: '100%',
+        }}>
+          {editorMode === 'TEXT' ? (
+            <TextCodeEditor
+              code={jsCode}
+              onChangeCode={handleCodeChange}
+              onRunCode={handleRunProgram}
+              onStopCode={handleStopExecution}
+              onResetCode={handleResetCode}
+              isRunning={isRunning}
+              logs={consoleLogs}
+              error={runtimeError}
+              friendlyExplanation={friendlyExplanation}
             />
-
-            {/* Tombol Run & Reset di Arena */}
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                disabled={isRunning}
-                onClick={handleRunProgram}
-                className="btn-chunky btn-success btn-lg"
-                style={{ flex: 2 }}
-              >
-                <Play size={22} fill="#FFFFFF" />
-                <span>{isRunning ? 'SEDANG JALAN...' : (editorMode === 'BLOCKS' ? 'JALANKAN BALOK!' : 'JALANKAN KODE!')}</span>
-              </button>
-              <button
-                onClick={() => { sounds.playClick(); handleReset(); }}
-                className="btn-chunky btn-danger"
-                style={{ flex: 1 }}
-              >
-                <RotateCcw size={18} />
-                <span>Reset</span>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* KOLOM KANAN: EDITOR KODE TAHAP 3 */}
-        {(!isMobileScreen || activeMobileTab === 'CODE') && (
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {editorMode === 'TEXT' ? (
-              <TextCodeEditor
-                code={jsCode}
-                onChangeCode={handleCodeChange}
-                onRunCode={handleRunProgram}
-                onStopCode={handleStopExecution}
-                onResetCode={handleResetCode}
-                isRunning={isRunning}
-                logs={consoleLogs}
-                error={runtimeError}
-                friendlyExplanation={friendlyExplanation}
-              />
-            ) : (
-              <CodeWorkshop
-                allowedBlocks={level.allowedBlocks}
-                blocks={blocks}
-                jsCode={jsCode}
-                activeBlockId={activeBlockId}
-                isRunning={isRunning}
-                onAddBlock={handleAddBlock}
-                onRemoveBlock={handleRemoveBlock}
-                onClearBlocks={handleClearBlocks}
-                onAddChildToRepeat={handleAddChildToRepeat}
-                onRemoveChildFromRepeat={handleRemoveChildFromRepeat}
-                onChangeRepeatCount={handleChangeRepeatCount}
-              />
-            )}
-          </div>
-        )}
+          ) : (
+            <CodeWorkshop
+              allowedBlocks={level.allowedBlocks}
+              blocks={blocks}
+              jsCode={jsCode}
+              activeBlockId={activeBlockId}
+              isRunning={isRunning}
+              onAddBlock={handleAddBlock}
+              onRemoveBlock={handleRemoveBlock}
+              onClearBlocks={handleClearBlocks}
+              onAddChildToRepeat={handleAddChildToRepeat}
+              onRemoveChildFromRepeat={handleRemoveChildFromRepeat}
+              onChangeRepeatCount={handleChangeRepeatCount}
+            />
+          )}
+        </div>
       </div>
 
       {/* MODAL PETUNJUK CEPAT (HINT) */}

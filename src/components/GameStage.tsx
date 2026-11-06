@@ -13,6 +13,7 @@ interface GameStageProps {
   activeHatId?: string;
   activeThemeId?: string;
   checkedTile?: { x: number; y: number; isClear: boolean } | null; // Highlight visual sensor pemeriksaan jalur aman
+  compact?: boolean; // Mode ramping vertikal khusus tampilan mobile
 }
 
 export const GameStage: React.FC<GameStageProps> = ({
@@ -24,6 +25,7 @@ export const GameStage: React.FC<GameStageProps> = ({
   isCrashed,
   trailSteps = [],
   checkedTile = null,
+  compact = false,
 }) => {
   const currentAvatar = AVATARS.find(a => a.id === avatarId) || AVATARS[0];
 
@@ -49,10 +51,10 @@ export const GameStage: React.FC<GameStageProps> = ({
       justifyContent: 'center',
       width: '100%',
       backgroundColor: arenaBg,
-      borderRadius: '24px',
+      borderRadius: compact ? '20px' : '24px',
       border: arenaBorder,
-      padding: '20px',
-      minHeight: '340px',
+      padding: compact ? '10px 12px' : '20px',
+      minHeight: compact ? 'auto' : '340px',
       overflow: 'hidden',
       position: 'relative',
       transition: 'all 0.3s ease',
@@ -107,21 +109,23 @@ export const GameStage: React.FC<GameStageProps> = ({
               tileEmoji = '🌿';
             }
 
+            const tileSize = compact ? 'clamp(34px, 7vw, 48px)' : 'clamp(44px, 8vw, 68px)';
+
             return (
               <div
                 key={`${x}-${y}`}
                 style={{
-                  width: 'clamp(44px, 8vw, 68px)',
-                  height: 'clamp(44px, 8vw, 68px)',
+                  width: tileSize,
+                  height: tileSize,
                   backgroundColor: tileBg,
                   border: tileBorder,
-                  borderRadius: '16px',
+                  borderRadius: compact ? '12px' : '16px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   position: 'relative',
-                  fontSize: '1.4rem',
-                  boxShadow: '0 3px 0 rgba(0, 0, 0, 0.08)',
+                  fontSize: compact ? '1.1rem' : '1.4rem',
+                  boxShadow: '0 2px 0 rgba(0, 0, 0, 0.08)',
                 }}
               >
                 {/* Penanda Jejak Titik Sensor Pemeriksaan Jalur */}

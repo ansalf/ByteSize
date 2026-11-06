@@ -308,7 +308,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
         {/* HEADER MODAL DENGAN STREAK API */}
         <div style={{
           background: 'linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 60%, #FEF9C3 100%)',
-          padding: '18px 64px 16px 20px',
+          padding: '16px 54px 14px 16px',
           borderBottom: '3px dashed #FCD34D',
           display: 'flex',
           alignItems: 'center',
@@ -316,41 +316,41 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
           flexWrap: 'wrap',
           gap: '12px',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: '1 1 auto' }}>
             <div style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '18px',
+              width: '46px',
+              height: '46px',
+              borderRadius: '16px',
               backgroundColor: '#F59E0B',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.8rem',
+              fontSize: '1.6rem',
               boxShadow: '0 4px 0 #D97706',
               flexShrink: 0,
             }}>
               ⚡
             </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                 <span style={{
-                  fontSize: '0.72rem',
+                  fontSize: '0.7rem',
                   fontWeight: 900,
                   backgroundColor: '#FDE68A',
                   color: '#92400E',
                   padding: '2px 8px',
                   borderRadius: '10px',
-                  letterSpacing: '0.5px',
+                  letterSpacing: '0.4px',
                   textTransform: 'uppercase',
                 }}>
                   Kuis Kilat 1 Menit
                 </span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#B45309' }}>
+                <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#B45309' }}>
                   {currentQuiz.category}
                 </span>
               </div>
               <h2 style={{
-                fontSize: '1.35rem',
+                fontSize: 'clamp(1.1rem, 3.5vw, 1.35rem)',
                 fontWeight: 900,
                 color: '#78350F',
                 lineHeight: 1.2,
@@ -361,27 +361,28 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
             </div>
           </div>
 
-          {/* Badge Streak Harian Gaya Api TikTok */}
+          {/* Badge Streak Harian Gaya Api TikTok (Responsif & Rapi di Mobile/Tab) */}
           <div 
             className="tiktok-streak-badge"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
-              borderRadius: '20px',
-              padding: '8px 18px',
+              gap: '8px',
+              borderRadius: '18px',
+              padding: '6px 14px',
               boxShadow: '0 4px 14px rgba(234, 88, 12, 0.45)',
+              flexShrink: 0,
             }}
           >
-            <span className="tiktok-fire-icon" style={{ fontSize: '1.8rem', lineHeight: 1 }}>
+            <span className="tiktok-fire-icon" style={{ fontSize: '1.5rem', lineHeight: 1 }}>
               🔥
             </span>
             <div>
-              <div style={{ fontSize: '0.65rem', fontWeight: 900, color: '#FEF08A', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
-                STREAK API KODING
+              <div style={{ fontSize: '0.62rem', fontWeight: 900, color: '#FEF08A', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                STREAK API
               </div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#FFFFFF', lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
-                {streakCount} HARI AKTIF!
+              <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#FFFFFF', lineHeight: 1, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+                {streakCount} HARI!
               </div>
             </div>
           </div>
@@ -463,7 +464,7 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
             {/* Kotak Kode JavaScript / Ilustrasi Visual */}
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
               gap: '12px',
               marginBottom: '6px',
             }}>
@@ -472,16 +473,17 @@ export const DailyChallengeModal: React.FC<DailyChallengeModalProps> = ({
                 backgroundColor: '#1E293B',
                 color: '#F8FAFC',
                 borderRadius: '16px',
-                padding: '14px 16px',
+                padding: '12px 14px',
                 fontFamily: 'monospace',
-                fontSize: '0.9rem',
+                fontSize: '0.85rem',
                 border: '2px solid #334155',
                 boxShadow: 'inset 0 2px 6px rgba(0,0,0,0.3)',
+                overflowX: 'auto',
               }}>
                 <div style={{ fontSize: '0.7rem', color: '#94A3B8', fontWeight: 800, marginBottom: '6px', textTransform: 'uppercase' }}>
                   💻 Kode JavaScript:
                 </div>
-                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.5, color: '#38BDF8' }}>
+                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', lineHeight: 1.5, color: '#38BDF8', wordBreak: 'break-word' }}>
                   {currentQuiz.codeSnippet}
                 </pre>
               </div>

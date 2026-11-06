@@ -205,14 +205,13 @@ body {
 .code-block-item.is-active-step {
   transform: scale(1.05);
   outline: 4px solid #FFAE00;
-  box-shadow: 0 0 20px rgba(255, 174, 0, 0.8), 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 16px rgba(255, 174, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.2);
   z-index: 10;
-  animation: activeGlow 0.8s infinite alternate ease-in-out;
 }
 
 @keyframes activeGlow {
-  0% { transform: scale(1.03); filter: brightness(1); }
-  100% { transform: scale(1.06); filter: brightness(1.15); }
+  0% { transform: scale(1.03); }
+  100% { transform: scale(1.05); }
 }
 
 .block-forward {
@@ -442,29 +441,21 @@ body {
 
 @keyframes flame-wiggle {
   0%, 100% {
-    transform: rotate(-3deg) scale(1);
-    filter: drop-shadow(0 0 6px #F97316);
-  }
-  25% {
-    transform: rotate(4deg) scale(1.08);
-    filter: drop-shadow(0 0 14px #EF4444) drop-shadow(0 0 22px #FBBF24);
+    transform: rotate(-2deg) scale(1);
+    filter: drop-shadow(0 2px 4px rgba(249, 115, 22, 0.4));
   }
   50% {
-    transform: rotate(-4deg) scale(1.15) translateY(-2px);
-    filter: drop-shadow(0 0 18px #F97316) drop-shadow(0 0 28px #F59E0B);
-  }
-  75% {
-    transform: rotate(3deg) scale(1.06);
-    filter: drop-shadow(0 0 12px #DC2626);
+    transform: rotate(2deg) scale(1.05);
+    filter: drop-shadow(0 2px 6px rgba(239, 68, 68, 0.4));
   }
 }
 
 @keyframes flame-pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4), inset 0 0 10px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 2px 6px rgba(234, 88, 12, 0.3);
   }
   50% {
-    box-shadow: 0 0 18px 4px rgba(249, 115, 22, 0.6), inset 0 0 14px rgba(239, 68, 68, 0.5);
+    box-shadow: 0 4px 10px rgba(249, 115, 22, 0.4);
   }
 }
 

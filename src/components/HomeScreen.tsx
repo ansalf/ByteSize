@@ -183,7 +183,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
 
           {/* Tombol Aksi Cepat, Izin Notifikasi HP & Tombol Dismiss */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, flexWrap: 'wrap' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+            width: '100%',
+            maxWidth: '100%',
+            marginTop: '6px',
+          }}>
             {/* Tombol Nyalakan Pengingat HP/Laptop jika belum diaktifkan */}
             {notifPermission !== 'granted' && (
               <button
@@ -193,17 +202,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 }}
                 className="btn-chunky btn-white btn-sm"
                 style={{
-                  fontSize: '0.8rem',
-                  padding: '8px 12px',
-                  borderRadius: '14px',
+                  fontSize: '0.78rem',
+                  padding: '6px 10px',
+                  borderRadius: '12px',
                   color: '#C2410C',
                   border: '2px solid #FDBA74',
                   whiteSpace: 'nowrap',
                 }}
                 title="Munculkan notifikasi pengingat langsung di layar HP atau Laptop"
               >
-                <Bell size={15} color="#EA580C" />
-                <span>Nyalakan di HP/Laptop 🔔</span>
+                <Bell size={14} color="#EA580C" />
+                <span>Nyalakan Notif 🔔</span>
               </button>
             )}
 
@@ -215,9 +224,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               }}
               className="btn-chunky btn-secondary btn-sm"
               style={{
-                fontSize: '0.85rem',
-                padding: '8px 16px',
-                borderRadius: '14px',
+                fontSize: '0.82rem',
+                padding: '6px 14px',
+                borderRadius: '12px',
                 whiteSpace: 'nowrap',
               }}
             >
@@ -231,8 +240,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 setDismissReminder(true);
               }}
               style={{
-                width: '32px',
-                height: '32px',
+                width: '30px',
+                height: '30px',
                 borderRadius: '50%',
                 backgroundColor: 'rgba(255, 255, 255, 0.8)',
                 border: '1.5px solid #FCD34D',
@@ -241,6 +250,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 justifyContent: 'center',
                 cursor: 'pointer',
                 color: '#92400E',
+                marginLeft: 'auto',
               }}
               title="Tutup pengingat untuk sementara"
             >

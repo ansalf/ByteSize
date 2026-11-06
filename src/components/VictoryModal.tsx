@@ -57,8 +57,7 @@ export const VictoryModal: React.FC<VictoryModalProps> = ({
     } catch (e) {
       // safe fallback
     }
-    sounds.playVictory();
-    sounds.speakText(`Luar biasa! Kamu berhasil menyelesaikan ${levelTitle} dan mendapatkan ${starsEarned} bintang!`);
+    // Suara victory dan text-to-speech perayaan level dinonaktifkan sesuai preferensi pengguna
   }, [levelTitle, starsEarned]);
 
   return (

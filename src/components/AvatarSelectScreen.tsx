@@ -113,8 +113,9 @@ export const AvatarSelectScreen: React.FC<AvatarSelectScreenProps> = ({
         justifyContent: 'space-between',
         flexWrap: 'wrap',
         gap: '12px',
+        width: '100%',
       }}>
-        {/* Tombol kembali hanya jika sudah pernah punya nama, jika baru pertama kali, tombol kembali tidak perlu membingungkan */}
+        {/* Tombol kembali hanya jika sudah pernah punya nama */}
         {progress.hasCustomizedName ? (
           <button
             className="btn-chunky btn-white btn-sm"
@@ -123,19 +124,19 @@ export const AvatarSelectScreen: React.FC<AvatarSelectScreenProps> = ({
             <ArrowLeft size={18} /> Kembali
           </button>
         ) : (
-          <div style={{ width: '80px' }} />
+          <div style={{ display: 'none' }} />
         )}
-        <div style={{ textAlign: 'center' }}>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--color-text-navy)' }}>
+        <div style={{ textAlign: 'center', flex: '1 1 auto', minWidth: '240px' }}>
+          <h2 style={{ fontSize: 'clamp(1.3rem, 4vw, 1.8rem)', fontWeight: 800, color: 'var(--color-text-navy)', margin: 0 }}>
             {!progress.hasCustomizedName ? 'Halo Petualang Baru! Siapa Namamu? 👋' : 'Pilih Jagoan Kodingmu! 🦸‍♂️'}
           </h2>
-          <p style={{ color: 'var(--color-text-slate)', fontSize: '0.95rem' }}>
+          <p style={{ color: 'var(--color-text-slate)', fontSize: '0.88rem', marginTop: '4px' }}>
             {!progress.hasCustomizedName 
               ? 'Tulis nama panggilanmu dan pilih karakter robot atau hewan favoritmu di bawah!' 
               : 'Setiap karakter memiliki suara dan kepribadian tersendiri!'}
           </p>
         </div>
-        <div style={{ width: '80px' }} /> {/* Spacer */}
+        {progress.hasCustomizedName ? <div style={{ width: '80px' }} className="hide-on-very-small" /> : null}
       </div>
 
       {/* TOP BANNER: Set Nama Panggilan & Simpan Langsung di Atas */}
@@ -143,24 +144,26 @@ export const AvatarSelectScreen: React.FC<AvatarSelectScreenProps> = ({
         background: 'linear-gradient(135deg, #FFFFFF 0%, #F0F9FF 100%)',
         border: '3px solid #38BDF8',
         boxShadow: '0 8px 0 #0284C7, 0 12px 24px rgba(2, 132, 199, 0.15)',
-        padding: 'clamp(14px, 3vw, 18px) clamp(16px, 3.5vw, 24px)',
+        padding: 'clamp(14px, 3vw, 18px) clamp(14px, 3.5vw, 20px)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: '14px',
+        gap: '12px',
         borderRadius: '24px',
+        width: '100%',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: '1 1 220px', minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: '1 1 240px', minWidth: 0, width: '100%' }}>
           <div style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '16px',
+            width: '44px',
+            height: '44px',
+            borderRadius: '14px',
             backgroundColor: '#E0F2FE',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '1.6rem',
+            fontSize: '1.5rem',
             border: '2px solid #BAE6FD',
             flexShrink: 0,
           }}>
@@ -170,13 +173,13 @@ export const AvatarSelectScreen: React.FC<AvatarSelectScreenProps> = ({
             <label style={{
               display: 'block',
               fontWeight: 800,
-              fontSize: '0.85rem',
+              fontSize: '0.82rem',
               color: 'var(--color-text-navy)',
-              marginBottom: '4px',
+              marginBottom: '3px',
             }}>
               Nama Panggilan:
             </label>
-            <div style={{ position: 'relative', width: '100%', maxWidth: '340px' }}>
+            <div style={{ position: 'relative', width: '100%' }}>
               <input
                 type="text"
                 maxLength={20}
@@ -185,8 +188,8 @@ export const AvatarSelectScreen: React.FC<AvatarSelectScreenProps> = ({
                 placeholder="Contoh: Bintang Cerdas"
                 style={{
                   width: '100%',
-                  padding: '8px 14px 8px 36px',
-                  fontSize: '1rem',
+                  padding: '8px 12px 8px 34px',
+                  fontSize: '0.95rem',
                   fontFamily: 'var(--font-family-kids)',
                   fontWeight: 800,
                   borderRadius: '12px',
@@ -194,6 +197,7 @@ export const AvatarSelectScreen: React.FC<AvatarSelectScreenProps> = ({
                   color: 'var(--color-text-navy)',
                   backgroundColor: '#FFFFFF',
                   outline: 'none',
+                  boxSizing: 'border-box',
                 }}
               />
               <Edit3
@@ -206,13 +210,15 @@ export const AvatarSelectScreen: React.FC<AvatarSelectScreenProps> = ({
         </div>
 
         <button
-          className="btn-chunky btn-secondary btn-lg"
+          className="btn-chunky btn-secondary"
           onClick={handleConfirm}
           style={{
-            padding: '12px 24px',
-            fontSize: 'clamp(0.95rem, 2vw, 1.15rem)',
+            padding: '12px 20px',
+            fontSize: 'clamp(0.9rem, 2vw, 1.05rem)',
             flex: '1 1 auto',
-            boxShadow: '0 5px 0 var(--color-secondary-dark)',
+            width: '100%',
+            maxWidth: '320px',
+            boxShadow: '0 4px 0 var(--color-secondary-dark)',
           }}
         >
           <Sparkles size={18} />

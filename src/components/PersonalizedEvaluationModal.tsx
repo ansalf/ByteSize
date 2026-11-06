@@ -500,8 +500,8 @@ export const PersonalizedEvaluationModal: React.FC<PersonalizedEvaluationModalPr
 
         {/* 5. TOMBOL AKSI */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
+          display: 'flex',
+          flexWrap: 'wrap',
           gap: '12px',
           marginTop: '10px',
           width: '100%',
@@ -515,7 +515,8 @@ export const PersonalizedEvaluationModal: React.FC<PersonalizedEvaluationModalPr
                 onOpenCertificate();
               }}
               style={{
-                width: '100%',
+                flex: '1 1 200px',
+                minWidth: 0,
                 padding: '12px 16px',
                 display: 'flex',
                 alignItems: 'center',
@@ -525,13 +526,16 @@ export const PersonalizedEvaluationModal: React.FC<PersonalizedEvaluationModalPr
                 color: '#B45309',
                 backgroundColor: '#FFFBEB',
                 borderRadius: '16px',
-                whiteSpace: 'nowrap',
-                fontSize: '0.92rem',
+                fontSize: '0.95rem',
                 fontWeight: 800,
+                textAlign: 'center',
+                lineHeight: 1.25,
               }}
             >
               <Award size={18} color="#D97706" style={{ flexShrink: 0 }} />
-              <span>Lihat Status Sertifikat 📜</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                Lihat Status Sertifikat 📜
+              </span>
             </button>
           )}
 
@@ -539,20 +543,24 @@ export const PersonalizedEvaluationModal: React.FC<PersonalizedEvaluationModalPr
             className="btn-chunky btn-secondary"
             onClick={onClose}
             style={{
-              width: '100%',
+              flex: '1 1 200px',
+              minWidth: 0,
               padding: '12px 18px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '8px',
               borderRadius: '16px',
-              whiteSpace: 'nowrap',
-              fontSize: '0.92rem',
+              fontSize: '0.95rem',
               fontWeight: 800,
+              textAlign: 'center',
+              lineHeight: 1.25,
             }}
           >
             <Zap size={18} style={{ flexShrink: 0 }} />
-            <span>Siap Tingkatkan Kodingku! 🚀</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              Siap Tingkatkan Kodingku! 🚀
+            </span>
           </button>
         </div>
         </div>

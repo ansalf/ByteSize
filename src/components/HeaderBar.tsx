@@ -41,15 +41,33 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
       flexWrap: 'wrap',
       width: '100%',
     }}>
-      {/* Logo Game */}
-      <div 
+      {/* Logo Game (Back to Home) */}
+      <button 
+        type="button"
         onClick={() => { sounds.playClick(); onNavigateHome(); }}
+        onTouchEnd={(e) => {
+          // Memastikan navigasi responsif pada layar sentuh mobile/tablet
+          e.preventDefault();
+          sounds.playClick();
+          onNavigateHome();
+        }}
+        aria-label="Kembali ke Beranda ByteSize"
+        title="Kembali ke Beranda"
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
           cursor: 'pointer',
           flexShrink: 0,
+          background: 'none',
+          border: 'none',
+          padding: '4px',
+          margin: '-4px',
+          borderRadius: '16px',
+          textAlign: 'left',
+          touchAction: 'manipulation',
+          userSelect: 'none',
+          WebkitTapHighlightColor: 'transparent',
         }}
       >
         <div style={{
@@ -63,10 +81,12 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           justifyContent: 'center',
           fontSize: 'clamp(1.3rem, 3.5vw, 1.6rem)',
           boxShadow: '0 3px 0 #7DD3FC',
+          flexShrink: 0,
+          pointerEvents: 'none',
         }}>
           🤖
         </div>
-        <div>
+        <div style={{ pointerEvents: 'none' }}>
           <h1 style={{
             fontSize: 'clamp(1.2rem, 3.5vw, 1.6rem)',
             fontWeight: 800,
@@ -80,7 +100,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             Petualangan Koding
           </span>
         </div>
-      </div>
+      </button>
 
       {/* Navigasi Cepat, Profil, & Status Bintang */}
       <div style={{
